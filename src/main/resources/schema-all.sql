@@ -1,7 +1,8 @@
-DROP TABLE people IF EXISTS;
+drop table if exists people;
 
-CREATE TABLE people  (
-    person_id BIGINT IDENTITY NOT NULL PRIMARY KEY,
-    first_name VARCHAR(20),
-    last_name VARCHAR(20)
+create table people( 
+  person_id SERIAL NOT NULL
+  , first_name VARCHAR (20)
+  , last_name VARCHAR (20)
+  , PRIMARY KEY (person_id)
 );

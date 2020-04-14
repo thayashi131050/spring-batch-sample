@@ -33,35 +33,41 @@ public class BatchConfiguration {
 
 	@Autowired
 	public StepBuilderFactory stepBuilderFactory;
+
+	@Autowired
+	public DataSource dataSource;
+	
 	// end::setup[]
 
 	// tag::readerwriterprocessor[]
-	@Bean
-	public FlatFileItemReader<Person> reader() {
-		return new FlatFileItemReaderBuilder<Person>()
-			.name("personItemReader")
-			.resource(new ClassPathResource("sample-data.csv"))
-			.delimited()
-			.names(new String[]{"firstName", "lastName"})
-			.fieldSetMapper(new BeanWrapperFieldSetMapper<Person>() {{
-				setTargetType(Person.class);
-			}})
-			.build();
-	}
+    @Bean
+    public FlatFileItemReader<Person> reader() {
+        FlatFileItemReader<Person> reader = new FlatFileItemReader<Person>();
+        reader.setResource(new ClassPathResource("sample-data.csv"));
+        reader.setLineMapper(new DefaultLineMapper<Person>() {{
+            setLineTokenizer(new DelimitedLineTokenizer() {{
+                setNames(new String[] { "firstName", "lastName" });
+            }});
+            setFieldSetMapper(new BeanWrapperFieldSetMapper<Person>() {{
+                setTargetType(Person.class);
+            }});
+        }});
+        return reader;
+    }
 
 	@Bean
 	public PersonItemProcessor processor() {
 		return new PersonItemProcessor();
 	}
 
-	@Bean
-	public JdbcBatchItemWriter<Person> writer(DataSource dataSource) {
-		return new JdbcBatchItemWriterBuilder<Person>()
-			.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-			.sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)")
-			.dataSource(dataSource)
-			.build();
-	}
+    @Bean
+    public JdbcBatchItemWriter<Person> writer() {
+        JdbcBatchItemWriter<Person> writer = new JdbcBatchItemWriter<Person>();
+        writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Person>());
+        writer.setSql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)");
+        writer.setDataSource(dataSource);
+        return writer;
+    }
 	// end::readerwriterprocessor[]
 
 	// tag::jobstep[]

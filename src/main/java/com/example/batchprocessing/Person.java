@@ -29,9 +29,13 @@ public class Person {
 		this.lastName = lastName;
 	}
 
+	public String getFullName() {
+		return this.firstName + this.lastName;
+	}
+
 	@Override
 	public String toString() {
-		return "firstName: " + firstName + ", lastName: " + lastName;
+		return "firstName: " + firstName + ", lastName: " + lastName + ", fullName: " + getFullName();
 	}
 
 }

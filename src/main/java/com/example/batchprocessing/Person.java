@@ -4,6 +4,7 @@ public class Person {
 
 	private String lastName;
 	private String firstName;
+	private String fullName;
 
 	public Person() {
 	}
@@ -29,9 +30,17 @@ public class Person {
 		this.lastName = lastName;
 	}
 
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
 	@Override
 	public String toString() {
-		return "firstName: " + firstName + ", lastName: " + lastName;
+		return "firstName: " + firstName + ", lastName: " + lastName + ", fullName: " + fullName;
 	}
 
 }

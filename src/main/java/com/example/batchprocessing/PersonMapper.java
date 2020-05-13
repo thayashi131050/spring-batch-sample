@@ -1,17 +1,13 @@
 package com.example.batchprocessing;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import org.springframework.jdbc.core.RowMapper;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
 
-public class PersonMapper implements RowMapper<Person> {
+@Mapper
+public interface PersonMapper {
 
-    public Person mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Person person = new Person();
+    public List<Person> select();
 
-        person.setFirstName(rs.getString("first_name"));
-        person.setLastName(rs.getString("last_name"));
+    public void save(Person person);
 
-        return person;
-    }
 }

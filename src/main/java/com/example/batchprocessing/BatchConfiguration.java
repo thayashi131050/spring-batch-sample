@@ -8,16 +8,17 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.JdbcCursorItemReader;
-import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 
-// tag::setup[]
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.batch.MyBatisBatchItemWriter;
+import org.mybatis.spring.batch.MyBatisCursorItemReader;
+import org.mybatis.spring.batch.builder.MyBatisBatchItemWriterBuilder;
+import org.mybatis.spring.batch.builder.MyBatisCursorItemReaderBuilder;
+
+
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
@@ -27,40 +28,35 @@ public class BatchConfiguration {
 
 	@Autowired
 	public StepBuilderFactory stepBuilderFactory;
-
+	
+	@Autowired
+	private SqlSessionFactory sqlSessionFactory;
+	
 	@Autowired
 	public DataSource dataSource;
-	
-	// end::setup[]
 
-	// tag::readerwriterprocessor[]
     @Bean
-    public JdbcCursorItemReader<Person> reader() {
-
-		return new JdbcCursorItemReaderBuilder<Person>()
-                .dataSource(dataSource)
-                .name("jdbcCursorItemReader")
-                .sql("select first_name, last_name from peopleInput")
-                .rowMapper(new PersonMapper())
+    public MyBatisCursorItemReader<Person> reader() {
+        return new MyBatisCursorItemReaderBuilder<Person>()
+                .sqlSessionFactory(sqlSessionFactory)
+                .queryId("com.example.batchprocessing.PersonMapper.select")
                 .build();
-	}
-
+    }
+	
 	@Bean
 	public PersonItemProcessor processor() {
 		return new PersonItemProcessor();
 	}
 
 	@Bean
-	public JdbcBatchItemWriter<Person> writer(DataSource dataSource) {
-		return new JdbcBatchItemWriterBuilder<Person>()
-			.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-			.sql("INSERT INTO peopleOutput (full_name) VALUES (:fullName)")
-			.dataSource(dataSource)
+	public MyBatisBatchItemWriter<Person> writer(DataSource dataSource) {
+		return new MyBatisBatchItemWriterBuilder<Person>()
+			.sqlSessionFactory(sqlSessionFactory)
+			.statementId("com.example.batchprocessing.PersonMapper.save")
 			.build();
 	}
-	// end::readerwriterprocessor[]
 
-	// tag::jobstep[]
+	// job/step
 	@Bean
 	public Job importUserJob(JobCompletionNotificationListener listener, Step step1) {
 		return jobBuilderFactory.get("importUserJob")
@@ -72,7 +68,7 @@ public class BatchConfiguration {
 	}
 
 	@Bean
-	public Step step1(JdbcBatchItemWriter<Person> writer) {
+	public Step step1(MyBatisBatchItemWriter<Person> writer) {
 		return stepBuilderFactory.get("step1")
 			.<Person, Person> chunk(10)
 			.reader(reader())
@@ -80,5 +76,4 @@ public class BatchConfiguration {
 			.writer(writer)
 			.build();
 	}
-	// end::jobstep[]
 }

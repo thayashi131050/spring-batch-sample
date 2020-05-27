@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <peopleinput person_id="1" first_name="abc" last_name="aaa"/>
+    <peopleinput person_id="2" first_name="bcd" last_name="aaa"/>
+    <peopleinput person_id="3" first_name="cde" last_name="aaa"/>
+    <peopleinput person_id="4" first_name="def" last_name="aaa"/>
+</dataset>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <peopleoutput person_id="1" full_name="ABCAAA"/>
-    <peopleoutput person_id="2" full_name="BCDAAA"/>
-    <peopleoutput person_id="3" full_name="CDEAAA"/>
-    <peopleoutput person_id="4" full_name="DEFAAA"/>
+    <peopleoutput full_name="ABCAAA"/>
+    <peopleoutput full_name="BCDAAA"/>
+    <peopleoutput full_name="CDEAAA"/>
+    <peopleoutput full_name="DEFAAA"/>
 </dataset>

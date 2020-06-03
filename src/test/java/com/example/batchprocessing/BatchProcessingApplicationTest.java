@@ -24,7 +24,7 @@ public class BatchProcessingApplicationTest {
         assertionMode=DatabaseAssertionMode.NON_STRICT
     )
     public void test() throws Exception{
-        BatchProcessingApplication.main(new String[] {""});
+        
     }
 
 
